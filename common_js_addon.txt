@@ -1,0 +1,170 @@
+var AnnotateDialogButton = function () {
+
+    var AnnotateDialog = function () {
+        return {
+            dialogs: {
+                AnnotateDialog: {
+                    titleMsg: 'wikieditor-toolbar-tool-AnnotateDialog-title',
+                    id: 'wikieditor-toolbar-AnnotateDialog-dialog',
+                    html: '<div id="wikieditor-toolbar-AnnotateDialog-step1Container"> <!-- what do you want to do wrapper-->\
+          </div>\
+          <div id="wikieditor-toolbar-AnnotateDialog-step2Container">\
+              <fieldset>\
+                  <div class="form-group">\
+                      <label id="wikieditor-toolbar-AnnotateDialog-propertyTypeLabel"  class=""  for="propertyType">Property:</label>\
+                      <select id="wikieditor-toolbar-AnnotateDialog-inputPropertyType" class="form-control" name="propertyType"></select>\
+                  </div>\
+                  <div class="form-group">\
+                      <label id="wikieditor-toolbar-AnnotateDialog-propertyValueLabel"   class="" for="propertyValue">Page:</label>\
+                      <input type="text" id="wikieditor-toolbar-AnnotateDialog-inputPropertyValue"  class="form-control"  name="propertyValue">\
+                  </div>\
+                  <div class="form-group">\
+                      <label id="wikieditor-toolbar-AnnotateDialog-propertyLabelLabel"  class=""  for="propertyLabel">Label:</label>\
+                      <input type="text" id="wikieditor-toolbar-AnnotateDialog-inputPropertyLabel"  class="form-control"  name="propertyLabel">\
+                  </div>\
+              </fieldset>\
+          </div>',
+                    init: function () {
+
+                        // config
+                        var pageLimit = 5000;
+
+                        //console.log('begin ajax calls');
+                        //Retreive property and prefill the dropdown
+                        var prefillPropertiesSelect = function(namespaceId) {
+                            $.ajax( {
+                                url: mw.util.wikiScript( 'api' ),
+                                dataType: 'json',
+                                data: {
+                                    'action':'query',
+                                    'format':'json',
+                                    'list':'allpages',
+                                    'aplimit': pageLimit,
+                                    'apnamespace': namespaceId
+                                },
+                                success:function(data){
+                                    var properties = data.query.allpages;
+                                    var propertyType = $('#wikieditor-toolbar-AnnotateDialog-inputPropertyType');
+                                    $.each(properties, function() {
+                                        //console.log(this);
+                                        var title = this.title.substr(9);
+                                        propertyType.append($("<option />").val(title).text(title).data('id',this.pageid));
+                                    });
+                                }
+                            });
+                        }
+
+                        // Retreive all namespaces and find the Property namespace
+                        $.ajax( {
+                            url: mw.util.wikiScript( 'api' ),
+                            dataType: 'json',
+                            data: {
+                                'action':'query',
+                                'format':'json',
+                                'meta':'siteinfo',
+                                'siprop': 'namespaces',
+                            },
+                            success:function(data){
+                                var namespaces = data.query.namespaces;
+                                $.each(namespaces, function() {
+                                    var current_name = this.canonical;
+                                    if (current_name == "Property") {
+                                        prefillPropertiesSelect(this.id);
+                                    }
+                                });
+                            }
+                        });
+                        //Retreive pages and prefill the autocomplete text input
+                        $.ajax( {
+                            url: mw.util.wikiScript( 'api' ),
+                            dataType: 'json',
+                            data: {
+                                'action':'query',
+                                'format':'json',
+                                'list':'allpages',
+                                'aplimit': pageLimit,
+                                'apnamespace': 0,
+                            },
+                            success:function(data){
+                                var pages = data.query.allpages;
+                                var pageTitles = [];
+                                $.each(pages, function() {
+                                    pageTitles.push(this.title);
+                                });
+
+                                $('#wikieditor-toolbar-AnnotateDialog-inputPropertyValue').typeahead({source: pageTitles});
+                            }
+                        });
+                        //console.log('ajax calls finished');
+                    },
+                    dialog: {
+                        resizable: false,
+                        dialogClass: 'wikiEditor-toolbar-dialog',
+                        width: 590,
+                        buttons: [{
+                            'text': 'insert',
+                            'click': function () {
+                                var propertyType = $(this).find('#wikieditor-toolbar-AnnotateDialog-inputPropertyType').val();
+                                var propertyValue = $(this).find('#wikieditor-toolbar-AnnotateDialog-inputPropertyValue').val();
+                                var propertyLabel = $(this).find('#wikieditor-toolbar-AnnotateDialog-inputPropertyLabel').val();
+
+                                var annotation = '[[' + propertyType + '::' + propertyValue + '|' + propertyLabel + ']]';
+
+                                $(this).dialog('close');
+
+                                $.wikiEditor.modules.toolbar.fn.doAction(
+                                    $(this).data('context'), {
+                                        type: 'replace',
+                                        options: {
+                                            peri: annotation,
+                                            ownline: true
+                                        }
+                                    },
+                                    $(this)
+                                );
+                            }
+                        }, {
+                            'text': 'cancel',
+                            'click': function () {
+                                $(this).dialog('close');
+                            }
+                        }],
+                        open: function () {
+                            console.log(this);
+
+                            var context = $(this).data('context');
+                            console.log(context);
+                            // Restore and immediately save selection state, needed for inserting stuff later
+                            context.fn.restoreCursorAndScrollTop();
+                            context.fn.saveCursorAndScrollTop();
+                            var selection = context.$textarea.textSelection('getSelection');
+                            // prefill the
+                            $(' #wikieditor-toolbar-AnnotateDialog-inputPropertyLabel').val(selection);
+                            $(' #wikieditor-toolbar-AnnotateDialog-inputPropertyValue').val(selection);
+                        }
+                    }
+                }
+            }
+        };
+    };
+
+    $(this).wikiEditor('addModule', AnnotateDialog());
+
+    $(this).wikiEditor('addToToolbar', {
+        'section': 'main',
+        'group': 'insert',
+        'tools': {
+            'AnnotateDialog': {
+                'label': 'AnnotateDialog', // or use labelMsg for a localized label, see above
+                'type': 'button',
+                'icon': 'customInsertImage.png',
+                'action': {
+                    'type': 'dialog',
+                    'module': 'AnnotateDialog'
+                }
+            }
+        }
+    });
+};
+
+$('#wpTextbox1').on('wikiEditor-toolbar-doneInitialSections', AnnotateDialogButton);
