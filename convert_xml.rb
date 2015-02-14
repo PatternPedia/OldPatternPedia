@@ -623,10 +623,10 @@ class Custom_Mainpage < Tree_Renderer
 			pattern_tables += "== #{category} ==\n"
 			pattern_tables += "{|\n"
 			pattern_counter = 0
-			sub_categories.each_pair do |sub_category, patern_names|
+			sub_categories.each_pair do |sub_category, pattern_names|
 				pattern_names.each do |pattern|
 					pattern_tables += "| align=\"center\" width=16,666%|[[File:#{patterns.pattern_icon_for_name(pattern)}|100px|center|link=#{pattern}]][[#{pattern}|#{pattern}]]\n"
-					pattern_counter++
+					pattern_counter += 1
 					if pattern_counter == 6
 						pattern_counter = 0
 						pattern_tables += "|-\n"
