@@ -196,14 +196,9 @@ class Pattern_Template < Page
 	
 	def text
 		pattern_template_text = render_noinclude
-		
-		pattern_template_text += "<includeonly>\n"
+		.+ "<includeonly>\n"
 		.+ "__NOTOC__\n"
-# 		.+ "<div class=\"edit-form-link\">\n"
-#   	.+ "[[Special:FormEdit/Pattern/{{FULLPAGENAME}}|Edit with form]]\n"
-#   	.+ "</div>\n"
-#   	.+ "\n"
-		pattern_template_text += "<div class=\"pattern\">\n"
+		.+ "<div class=\"pattern\">\n"
   	.+ "\n"
 		
 		rendered_sections = []
@@ -240,8 +235,8 @@ class Pattern_Template < Page
 	private
 	def render_noinclude
   	noinclude = "<noinclude>\n"
-  	noinclude += "This is the \"Pattern\" template. It should be called in the following format:\n"
-  	noinclude += "<pre>\n"
+  	.+ "This is the \"Pattern\" template. It should be called in the following format:\n"
+  	.+ "<pre>\n"
 		
 		# The method that is used to render patterns for the xml (that is used for
 		# Special:Import) is used here with no text inside the sections, so that users, who
@@ -249,11 +244,10 @@ class Pattern_Template < Page
 		pattern_dummy = Pattern.new
 		pattern_dummy.sections = sections
   	noinclude += pattern_dummy.text
-  	noinclude += "\n"
-		
-  	noinclude += "</pre>\n"
-  	noinclude += "Edit the page to see the template text.\n"
-  	noinclude += "</noinclude>\n"
+  	.+ "\n"
+  	.+ "</pre>\n"
+  	.+ "Edit the page to see the template text.\n"
+  	.+ "</noinclude>\n"
   end
   
   ## render_classic_layout
@@ -410,18 +404,18 @@ class Pattern_Template < Page
   
   def render_icon_next_to_intent
     icon_next_to_intent = "<div class=\"row\" style=\"margin-bottom:20px;\">\n"
-    icon_next_to_intent += "<div class=\"col-lg-3\">\n"
-    icon_next_to_intent += "<div>\n"
-    icon_next_to_intent += "[[File:{{{icon}}}|118px]]\n"
-    icon_next_to_intent += "</div>\n"
-    icon_next_to_intent += "</div>\n"
-    icon_next_to_intent += "<div class=\"question-wrapper col-lg-8\">\n"
-  	icon_next_to_intent += "<div class=\"intent well well-lg\">\n"
-  	icon_next_to_intent += "{{{intent}}}\n"
-  	icon_next_to_intent += "</div>\n"
-    icon_next_to_intent += "</div>\n"
-    icon_next_to_intent += "</div>\n"
-    icon_next_to_intent += "\n"
+    .+ "<div class=\"col-lg-3\">\n"
+    .+ "<div>\n"
+    .+ "[[File:{{{icon}}}|118px]]\n"
+    .+ "</div>\n"
+    .+ "</div>\n"
+    .+ "<div class=\"question-wrapper col-lg-8\">\n"
+  	.+ "<div class=\"intent well well-lg\">\n"
+  	.+ "{{{intent}}}\n"
+  	.+ "</div>\n"
+    .+ "</div>\n"
+    .+ "</div>\n"
+    .+ "\n"
   end
   
   def render_missing_sections(rendered_sections)
@@ -432,17 +426,17 @@ class Pattern_Template < Page
 					when 'category'
 					when 'icon'
 						missing_sections += "<div style=\"margin-bottom:20px;\">\n"
-						missing_sections += "[[File:{{{icon}}}|118px]]\n"
-						missing_sections += "</div>\n"
-						missing_sections += "\n"
+						.+ "[[File:{{{icon}}}|118px]]\n"
+						.+ "</div>\n"
+						.+ "\n"
 					else
 						missing_sections += "<div class=\"panel panel-default\">\n"
-						missing_sections += "<div class=\"panel-heading\">" + section.name.prettify + "</div>\n"
-						missing_sections += "<div class=\"panel-body\">\n"
-						missing_sections += "{{{" + section.name + "}}}\n"
-						missing_sections += "</div>\n"
-						missing_sections += "</div>\n"
-						missing_sections += "\n"
+						.+ "<div class=\"panel-heading\">#{section.name.prettify}</div>\n"
+						.+ "<div class=\"panel-body\">\n"
+						.+ "{{{#{section.name}}}}\n"
+						.+ "</div>\n"
+						.+ "</div>\n"
+						.+ "\n"
 				end
 			end
 		end
