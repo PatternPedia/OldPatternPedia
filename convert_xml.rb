@@ -602,8 +602,7 @@ class Custom_Mainpage < Tree_Renderer
 	end
 	
 	def text
-		mainpage_text = "__NOTOC__\n"
-		.+ "__NOEDITSECTION__\n"
+		mainpage_text = "__NOTOC__ __NOEDITSECTION__\n"
 		.+ categories.first.text + "\n"
 		case tree_debth
 			when 1
