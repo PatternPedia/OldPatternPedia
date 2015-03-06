@@ -106,7 +106,19 @@ class String
 end
 
 class MediaWiki
-  def self.render(name, pages)
+  
+  private
+  
+  attr_accessor :name, :pages
+  
+  public
+  
+  def initialize(name, pages)
+    @name = name
+    @pages = pages
+  end
+  
+  def render
     document = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
     .+ "<mediawiki xmlns=\"http://www.mediawiki.org/xml/export-0.8/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.mediawiki.org/xml/export-0.8/ http://www.mediawiki.org/xml/export-0.8.xsd\" version=\"0.8\" xml:lang=\"en\">\n"
     .+ "\n"
@@ -950,15 +962,15 @@ common_js = Common_Js.new(properties, 'common_js_addon.txt')
 mediawiki_mainpage = MediaWiki_Mainpage.new(categories.first)
 custom_mainpage = Custom_Mainpage.new(categories, patterns)
 
-# Generate the MediaWiki 
+# Instatiation of the MediaWiki 
 # The MediaWiki is dependant on the primary and secondary data model, therefore every object of type "Page",
 # except common_js and mediawiki_mainpage,
-# because these Wiki-Pages do not work when automatically imported by Special:Import.
-mediaWiki = MediaWiki.render(categories.first.name_without_prefix, (categories + properties + patterns) << pattern_template << sidebar << custom_mainpage)
+# because these Wiki-Pages do not work when being automatically imported by Special:Import.
+mediaWiki = MediaWiki.new(categories.first.name_without_prefix, (categories + properties + patterns) << pattern_template << sidebar << custom_mainpage)
 
-# Write the MediaWiki-XML that is used for Special:Import 
+# Render the MediaWiki-XML that is used for Special:Import and write it to the output 
 output = File.open(options[:output_file], 'w')
-output.write(mediaWiki)
+output.write(mediaWiki.render)
 output.close
 
 # Write the file which content has to be pasted into MediaWiki:Common.js
