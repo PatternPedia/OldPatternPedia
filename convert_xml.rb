@@ -944,18 +944,23 @@ common_js = Common_Js.new(properties, 'common_js_addon.txt')
 mediawiki_mainpage = MediaWiki_Mainpage.new(categories)
 custom_mainpage = Custom_Mainpage.new(categories, patterns)
 
-# Generate the MediaWiki-XML that is used for Special:Import 
+# Generate the MediaWiki 
+# The MediaWiki is dependant on the primary and secondary data model, therefore every object of type "Page",
+# except common_js and mediawiki_mainpage,
+# because those Wiki-Pages do not work when automatically imported by Special:Import.
 mediaWiki = MediaWiki.render(categories.first.name_without_prefix, (categories + properties + patterns) << pattern_template << sidebar << custom_mainpage)
+
+# Write the MediaWiki-XML that is used for Special:Import 
 output = File.open(options[:output_file], 'w')
 output.write(mediaWiki)
 output.close
 
-# Generate the file which content has to be pasted into MediaWiki:Common.js
+# Write the file which content has to be pasted into MediaWiki:Common.js
 common_js_file = File.open(options[:common_js_file], 'w')
 common_js_file.write(common_js.text)
 common_js_file.close
 
-# Generate the file which content has to be pasted into MediaWiki:Mainpage
+# Write the file which content has to be pasted into MediaWiki:Mainpage
 mainpage_file = File.open(options[:mainpage_file], 'w')
 mainpage_file.write(mediawiki_mainpage.text)
 mainpage_file.close
