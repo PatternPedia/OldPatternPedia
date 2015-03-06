@@ -885,7 +885,18 @@ end
 
 class Section_Container < Array
 
-	def self.new_from_section_names(available_sections_names, ul_rendered_sections_names)
+	def self.new_from_section_files(sections_file, ul_rendered_file)
+	  
+	  available_sections_names = []
+    ul_rendered_sections_names = []
+    
+    File.readlines(sections_file).each do |line|
+      available_sections_names << line.gsub("\n", "").gsub("\r", "")
+    end
+    File.readlines(ul_rendered_file).each do |line|
+      ul_rendered_sections_names << line.gsub("\n", "").gsub("\r", "")
+    end
+	  
 		new_container = Section_Container.new
 		available_sections_names.each do |sec|
 			new_container << Section.new(sec, ul_rendered_sections_names.include?(sec))
@@ -913,53 +924,38 @@ class Section_Container < Array
 
 end		
 
-#
-## Prepare for generating the MediaWiki-XML for Special:Import and
-## the Javascript for MediaWiki:Common.js
-##
+# Read the input file and put it into a nokogiri
 file = File.open(options[:input_file])
 nokogiri = Nokogiri.XML(file)
 file.close
 
-available_sections_names = []
-ul_rendered_sections_names = []
-File.readlines('sections.txt').each do |line|
-	available_sections_names << line.gsub("\n", "").gsub("\r", "")
-end
-File.readlines('ul_rendered_sections.txt').each do |line|
-	ul_rendered_sections_names << line.gsub("\n", "").gsub("\r", "")
-end
-
-sections = Section_Container.new_from_section_names(available_sections_names, ul_rendered_sections_names)
-
+# Instantiation of primary data model.
+# The Primary data model is dependant on the nokogiri, the two section text files and itself.
+sections = Section_Container.new_from_section_files('sections.txt', 'ul_rendered_sections.txt')
 categories = Category_Container.new(nokogiri)
 properties = Property_Container.new(nokogiri)
 patterns = Pattern_Container.new(nokogiri, sections, categories)
 
+# Instatiation of secondary data model.
+# The secondary data model is dependant on the primary data model and the common_js_addon.
 pattern_template = Pattern_Template.new(sections, properties)
 sidebar = Sidebar.new(categories, patterns)
 common_js = Common_Js.new(properties, 'common_js_addon.txt')
 mediawiki_mainpage = MediaWiki_Mainpage.new(categories)
 custom_mainpage = Custom_Mainpage.new(categories, patterns)
 
-#
-## Generate the MediaWiki-XML that is used for Special:Import 
-##
+# Generate the MediaWiki-XML that is used for Special:Import 
 mediaWiki = MediaWiki.render(categories.first.name_without_prefix, (categories + properties + patterns) << pattern_template << sidebar << custom_mainpage)
 output = File.open(options[:output_file], 'w')
 output.write(mediaWiki)
 output.close
 
-#
-## Generate the file which content has to be pasted into MediaWiki:Common.js
-##
+# Generate the file which content has to be pasted into MediaWiki:Common.js
 common_js_file = File.open(options[:common_js_file], 'w')
 common_js_file.write(common_js.text)
 common_js_file.close
 
-#
-## Generate the file which content has to be pasted into MediaWiki:Mainpage
-##
+# Generate the file which content has to be pasted into MediaWiki:Mainpage
 mainpage_file = File.open(options[:mainpage_file], 'w')
 mainpage_file.write(mediawiki_mainpage.text)
 mainpage_file.close
