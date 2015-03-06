@@ -704,7 +704,11 @@ end
 
 class Common_Js < Page
 
+  private
+  
 	attr_accessor :properties, :addon_name
+	
+	public
 	
 	def initialize(properties, addon_name)
 		@properties = properties
