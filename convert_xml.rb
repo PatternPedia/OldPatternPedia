@@ -685,10 +685,10 @@ end
 
 class MediaWiki_Mainpage < Page
 
-	attr_accessor :categories
+	attr_accessor :root_category
 
-	def initialize(categories)
-		@categories = categories
+	def initialize(root_category)
+		@root_category = root_category
 	end
 
 	def name
@@ -696,7 +696,8 @@ class MediaWiki_Mainpage < Page
 	end
 	
 	def text
-		categories.first.name_without_prefix
+	  root_category.name_without_prefix
+		#categories.first.name_without_prefix
 	end
 	
 end
@@ -924,7 +925,8 @@ class Section_Container < Array
 
 end		
 
-# Read the input file and put it into a nokogiri
+# Read the input file and put it into a nokogiri,
+# an object that offers easy access to the content of an XML.
 file = File.open(options[:input_file])
 nokogiri = Nokogiri.XML(file)
 file.close
@@ -941,13 +943,13 @@ patterns = Pattern_Container.new(nokogiri, sections, categories)
 pattern_template = Pattern_Template.new(sections, properties)
 sidebar = Sidebar.new(categories, patterns)
 common_js = Common_Js.new(properties, 'common_js_addon.txt')
-mediawiki_mainpage = MediaWiki_Mainpage.new(categories)
+mediawiki_mainpage = MediaWiki_Mainpage.new(categories.first)
 custom_mainpage = Custom_Mainpage.new(categories, patterns)
 
 # Generate the MediaWiki 
 # The MediaWiki is dependant on the primary and secondary data model, therefore every object of type "Page",
 # except common_js and mediawiki_mainpage,
-# because those Wiki-Pages do not work when automatically imported by Special:Import.
+# because these Wiki-Pages do not work when automatically imported by Special:Import.
 mediaWiki = MediaWiki.render(categories.first.name_without_prefix, (categories + properties + patterns) << pattern_template << sidebar << custom_mainpage)
 
 # Write the MediaWiki-XML that is used for Special:Import 
