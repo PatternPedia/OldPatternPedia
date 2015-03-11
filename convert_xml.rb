@@ -910,8 +910,15 @@ class Section_Container < Array
     File.readlines(sections_file).each do |line|
       available_sections_names << line.gsub("\n", "").gsub("\r", "")
     end
-    File.readlines(ul_rendered_file).each do |line|
-      ul_rendered_sections_names << line.gsub("\n", "").gsub("\r", "")
+    
+    # If the file that contains the ul-rendered sections is missing,
+    # the array ul_rendered_sections_names stays empty and the 
+    # ul-render feature is disabled.
+    begin
+      File.readlines(ul_rendered_file).each do |line|
+        ul_rendered_sections_names << line.gsub("\n", "").gsub("\r", "")
+      end
+    rescue
     end
 	  
 		new_container = Section_Container.new
