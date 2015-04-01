@@ -448,7 +448,6 @@ class Pattern_Template < Page
 		sections.each do |section|
 			if !rendered_sections.include?(section.name)
 				case section.name
-				  when 'name'
 					when 'category'
 					when 'icon'
 						missing_sections += "<div style=\"margin-bottom:20px;\">\n"
@@ -906,7 +905,10 @@ class Section_Container < Array
     ul_rendered_sections_names = []
     
     File.readlines(sections_file).each do |line|
-      available_sections_names << line.gsub("\n", "").gsub("\r", "")
+      trimmed_line = line.gsub("\n", "").gsub("\r", "")
+      if trimmed_line != 'name'
+        available_sections_names << trimmed_line
+      end
     end
     
     # If the file that contains the ul-rendered sections is missing,
