@@ -448,6 +448,7 @@ class Pattern_Template < Page
 		sections.each do |section|
 			if !rendered_sections.include?(section.name)
 				case section.name
+				  when 'name'
 					when 'category'
 					when 'icon'
 						missing_sections += "<div style=\"margin-bottom:20px;\">\n"
