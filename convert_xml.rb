@@ -174,11 +174,10 @@ class Category < Page
 end
 
 class Property < Page
-  attr_accessor :type, :raw_text
+  attr_accessor :raw_text
   
   def text
-  	property_text = self.raw_text
-    property_text += "[[Has type::" + self.type + "| ]]"
+  	self.raw_text
   end
   
   def name_without_prefix
@@ -810,7 +809,6 @@ class Property_Container < Array
   def self.parse_property(property)
     prop = Property.new
     prop.name = "Property:" + property.css('name').text
-    prop.type = property.css('type').text
     prop.raw_text = property.css('description').text.gsub(/\s+/, ' ').strip
     prop
   end
