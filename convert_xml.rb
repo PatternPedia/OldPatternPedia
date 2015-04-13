@@ -206,8 +206,12 @@ class Pattern < Page
 end
 
 class Pattern_Template < Page
+  
+  private
 	
 	attr_accessor :sections, :properties
+	
+	public
 		
 	def initialize(sections, properties)
 		@sections = sections
@@ -478,8 +482,12 @@ class Pattern_Template < Page
 end
 
 class Tree_Renderer < Page
+  
+  private
 
 	attr_accessor :categories, :patterns
+	
+	public
 	
 	def initialize(categories, patterns)
 		@categories = categories
@@ -692,8 +700,12 @@ class Custom_Mainpage < Tree_Renderer
 end
 
 class MediaWiki_Mainpage < Page
+  
+  private
 
 	attr_accessor :root_category
+	
+	public
 
 	def initialize(root_category)
 		@root_category = root_category
