@@ -1,0 +1,47 @@
+$wgDefaultSkin = 'bootstrapmediawiki';
+require_once("$IP/skins/bootstrap-mediawiki/bootstrap-mediawiki.php");
+
+require_once("$IP/extensions/UploadLocal/UploadLocal.php");
+$wgUploadLocalDirectory = $IP . '/extensions/UploadLocal/data';
+
+require_once("$IP/extensions/SemanticBundle/SemanticBundleSettings.php");
+require_once("$IP/extensions/SemanticBundle/SemanticBundle.php");
+
+$smwgShowFactbox = SMW_FACTBOX_SPECIAL;
+
+require_once("$IP/extensions/ParserFunctions/ParserFunctions.php");
+
+# Enables use of WikiEditor by default but still allow users to disable it in preferences
+$wgDefaultUserOptions['usebetatoolbar'] = 1;
+$wgDefaultUserOptions['usebetatoolbar-cgd'] = 1;
+# Displays the Preview and Changes tabs
+$wgDefaultUserOptions['wikieditor-preview'] = 0;
+# Displays the Publish and Cancel buttons on the top right side
+$wgDefaultUserOptions['wikieditor-publish'] = 0;
+$wgDefaultUserOptions[''] = 1;
+
+
+$sfgRenameMainEditTab = true;
+
+
+require_once "$IP/extensions/WikiEditor/WikiEditor.php";
+
+require_once("$IP/extensions/SemanticExtraSpecialProperties/SemanticExtraSpecialProperties.php");
+$sespSpecialProperties[] = '_EUSER'; // Add properties for contributing users
+$sespSpecialProperties[] = '_CUSER'; // Add property for creating user
+$sespSpecialProperties[] = '_REVID'; // Add property with current revision ID
+$sespSpecialProperties[] = '_VIEWS'; // Add property with number of page views. Note that depending on local settings this value might not be very up to date. In case $wgDisableCounters is set to true this property will not be set.
+$sespSpecialProperties[] = '_NREV'; // Add property showing an estimated number of total revisions
+$sespSpecialProperties[] = '_TNREV'; // Same but for the talk page, i.e. showing how much discussion is going on around this page
+$sespSpecialProperties[] = '_SUBP'; // Add properties pointing to subpages
+$sespSpecialProperties[] = '_MIMETYPE'; // Adding mimetype and mediatype in case the article object is NS_IMAGE/NS_FILE
+$sespSpecialProperties[] = '_SHORTURL'; //Adding ShortUrl property, if ShortUrl Extension is installed
+$sespSpecialProperties[] = '_METADATA'; //Adding some porperties based om image metadata (exif data), when available
+$sespSpecialProperties[] = '_USERREG'; //Adding user registration date to user pages
+$wgSESPExcludeBots = true;
+
+
+//$wgResourceLoaderDebug = true;
+//$wgShowExceptionDetails = true;
+
+require_once( "$IP/extensions/Nuke/Nuke.php" );
